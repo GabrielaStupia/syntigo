@@ -74,19 +74,36 @@ label {
       <option>Vintage & upcycled</option>
     </select>
 
-    <button type="button" onclick="generateReport()">Generate report</button>
+    <button type="button" id="button" onclick="generateReport()">Generate report</button>
 
   </form>
+  <div id="report" style="margin-top: 2rem; white-space: pre-wrap; line-height: 1.7; font-size: 15px;"></div>
 <script>
-
     async function generateReport() {
       const brandName = document.getElementById('brand-name').value
       const market = document.getElementById('market').value
       const segment = document.getElementById('segment').value
 
-      console.log(brandName, market, segment)
-    }
+      if (!brandName) {
+        alert('Please enter a brand name')
+        return
+      }
 
+      document.getElementById('button').textContent = 'Generating...'
+      document.getElementById('button').disabled = true
+
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandName, market, segment })
+      })
+
+      const data = await response.json()
+
+      document.getElementById('report').innerText = data.report
+      document.getElementById('button').textContent = 'Generate report'
+      document.getElementById('button').disabled = false
+    }
   </script>
 </body>
 </html>
