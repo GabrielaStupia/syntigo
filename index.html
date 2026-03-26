@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+    body {
+      font-family: Georgia, serif;
+      background: #cc8ce6;
+      color: #1a1814;
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+label {
+      display: block;
+      font-size: 13px;
+      margin-top: 20px;
+      margin-bottom: 6px;
+      color: #42404a;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #1a1814;
+    }
+
+    button {
+      margin-top: 28px;
+      width: 100%;
+      padding: 14px;
+      font-size: 15px;
+      background: #8574e9;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+
+  <title>personas.</title>
+</head>
+<body>
+
+  <h1>Generate your audience report</h1>
+  <form>
+
+    <label>Brand name</label>
+    <input type="text" id="brand-name" placeholder="e.g. Kollektiv Studio">
+
+    <label>Market</label>
+    <select id="market">
+      <option>Germany</option>
+      <option>Austria</option>
+      <option>Switzerland</option>
+      <option>DACH (all regions)</option>
+    </select>
+
+    <label>Brand segment</label>
+    <select id="segment">
+      <option>Sustainable fashion</option>
+      <option>Streetwear</option>
+      <option>Luxury streetwear</option>
+      <option>Vintage & upcycled</option>
+    </select>
+
+    <button type="button" onclick="generateReport()">Generate report</button>
+
+  </form>
+<script>
+
+    async function generateReport() {
+      const brandName = document.getElementById('brand-name').value
+      const market = document.getElementById('market').value
+      const segment = document.getElementById('segment').value
+
+      console.log(brandName, market, segment)
+    }
+
+  </script>
+</body>
+</html>
