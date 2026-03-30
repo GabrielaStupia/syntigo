@@ -2,108 +2,515 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syntigo — Internal Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple-deep:  #4A1B6D;
+      --purple-mid:   #6B3FA0;
+      --purple-light: #9B59C4;
+      --purple-blush: #F3EAFA;
+      --navy-deep:    #1B3A6B;
+      --navy-mid:     #2E5FAA;
+      --navy-ice:     #E8EEF8;
+      --ink:          #2E2A26;
+      --ink-mid:      #888070;
+      --ink-light:    #D3C9BF;
+      --white:        #FDFCFB;
+      --border:       rgba(46,42,38,0.1);
+    }
 
     body {
-      font-family: Georgia, serif;
-      background: #cc8ce6;
-      color: #1a1814;
-      max-width: 600px;
-      margin: 60px auto;
-      padding: 0 24px;
+      font-family: 'Inter', sans-serif;
+      background: #F7F5F2;
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 2rem 1rem;
     }
 
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 8px;
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: 16px;
+      border: 0.5px solid var(--border);
+      overflow: hidden;
     }
-label {
-      display: block;
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--purple-mid);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .nav-tag {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      font-weight: 500;
+    }
+
+    .form-wrap {
+      padding: 2rem;
+    }
+
+    .page-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--purple-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+
+    .page-sub {
       font-size: 13px;
-      margin-top: 20px;
-      margin-bottom: 6px;
-      color: #42404a;
+      color: var(--ink-mid);
+      margin-bottom: 2rem;
     }
 
-    input, select {
+    .section-divider {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      font-weight: 500;
+      margin: 1.75rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-mid);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
       width: 100%;
       padding: 10px 14px;
-      font-size: 15px;
-      border: 1px solid #ccc;
+      font-size: 14px;
+      border: 0.5px solid var(--border);
       border-radius: 8px;
-      background: #ffffff;
-      color: #1a1814;
+      background: var(--white);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.15s;
     }
 
-    button {
-      margin-top: 28px;
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--purple-light);
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.6;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .report-type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .rtype {
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.875rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .rtype:hover {
+      border-color: var(--purple-light);
+    }
+
+    .rtype.active {
+      border: 1.5px solid var(--purple-mid);
+      background: var(--purple-blush);
+    }
+
+    .rtype-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    .rtype-desc {
+      font-size: 11px;
+      color: var(--ink-mid);
+      line-height: 1.4;
+    }
+
+    .rtype.active .rtype-name {
+      color: var(--purple-mid);
+    }
+
+    .dynamic-field {
+      background: var(--purple-blush);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 0.5px solid var(--purple-tint, #D4B0EC);
+    }
+
+    .dynamic-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--purple-mid);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .dynamic-field select {
+      border-color: #D4B0EC;
+    }
+
+    .style-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .style-pill {
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 100px;
+      border: 0.5px solid var(--border);
+      cursor: pointer;
+      color: var(--ink-mid);
+      background: var(--white);
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .style-pill.active {
+      background: var(--navy-ice);
+      border-color: var(--navy-mid);
+      color: var(--navy-deep);
+      font-weight: 500;
+    }
+
+    .btn-generate {
       width: 100%;
       padding: 14px;
-      font-size: 15px;
-      background: #8574e9;
-      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      background: var(--purple-mid);
+      color: var(--purple-blush);
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-family: 'Barlow Condensed', sans-serif;
+      margin-top: 1.5rem;
+      transition: background 0.15s;
     }
-  </style>
 
-  <title>syntigo</title>
+    .btn-generate:hover { background: var(--purple-deep); }
+    .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .result {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: #F0FAF5;
+      border: 0.5px solid #A8D5BC;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .result-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #2A7A52;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .result-link {
+      font-size: 13px;
+      color: var(--navy-deep);
+      word-break: break-all;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .btn-copy {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: 0.5px solid var(--navy-mid);
+      background: transparent;
+      color: var(--navy-deep);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.15s;
+    }
+
+    .btn-copy:hover { background: var(--navy-ice); }
+    .btn-copy.copied { background: var(--navy-ice); color: var(--navy-deep); }
+  </style>
 </head>
 <body>
 
-  <h1>Generate your audience report</h1>
-  <form>
+  <div class="page">
+    <nav class="nav">
+      <span class="nav-logo">Syntigo</span>
+      <span class="nav-tag">Internal Tool</span>
+    </nav>
 
-    <label>Brand name</label>
-    <input type="text" id="brand-name" placeholder="e.g. Kollektiv Studio">
+    <div class="form-wrap">
+      <div class="page-title">Generate a report</div>
+      <div class="page-sub">Fill in the brand details to generate a persona-based audience report.</div>
 
-    <label>Market</label>
-    <select id="market">
-      <option>Germany</option>
-      <option>Austria</option>
-      <option>Switzerland</option>
-      <option>DACH (all regions)</option>
-    </select>
+      <div class="section-divider">Brand</div>
 
-    <label>Brand segment</label>
-    <select id="segment">
-      <option>Sustainable fashion</option>
-      <option>Streetwear</option>
-      <option>Luxury streetwear</option>
-      <option>Vintage & upcycled</option>
-    </select>
+      <div class="field">
+        <label>Brand name</label>
+        <input type="text" id="brand-name" placeholder="e.g. Kollektiv Studio">
+      </div>
 
-    <button type="button" id="button" onclick="generateReport()">Generate report</button>
+      <div class="field">
+        <label>Brand description</label>
+        <textarea id="brand-description" placeholder="Brief description of the brand, its aesthetic, and positioning…"></textarea>
+      </div>
 
-  </form>
-  <div id="report" style="margin-top: 2rem; white-space: pre-wrap; line-height: 1.7; font-size: 15px;"></div>
-<script>
+      <div class="section-divider">Target demographic</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Age range</label>
+          <select id="age-range">
+            <option>18 – 24</option>
+            <option selected>25 – 34</option>
+            <option>35 – 44</option>
+            <option>45 – 54</option>
+            <option>55+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Income bracket</label>
+          <select id="income">
+            <option>Under €30k</option>
+            <option>€30k – €60k</option>
+            <option selected>€60k – €100k</option>
+            <option>€100k+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Primary market</label>
+          <select id="market">
+            <option>Germany</option>
+            <option>Austria</option>
+            <option>Switzerland</option>
+            <option>DACH (all regions)</option>
+            <option>France</option>
+            <option>Italy</option>
+            <option>UK</option>
+            <option>Netherlands</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Brand segment</label>
+          <select id="segment">
+            <option>Sustainable fashion</option>
+            <option>Streetwear</option>
+            <option>Luxury streetwear</option>
+            <option>Vintage & upcycled</option>
+            <option>Contemporary luxury</option>
+            <option>Minimalist basics</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Style sensibility</label>
+        <div class="style-pills" id="style-pills">
+          <span class="style-pill" onclick="this.classList.toggle('active')">Minimalist</span>
+          <span class="style-pill" onclick="this.classList.toggle('active')">Editorial</span>
+          <span class="style-pill" onclick="this.classList.toggle('active')">Sustainable</span>
+          <span class="style-pill" onclick="this.classList.toggle('active')">Streetwear</span>
+          <span class="style-pill" onclick="this.classList.toggle('active')">Luxury</span>
+          <span class="style-pill" onclick="this.classList.toggle('active')">Avant-garde</span>
+          <span class="style-pill" onclick="this.classList.toggle('active')">Classic</span>
+          <span class="style-pill" onclick="this.classList.toggle('active')">Vintage</span>
+        </div>
+      </div>
+
+      <div class="section-divider">Report type</div>
+
+      <div class="report-type-grid">
+        <div class="rtype active" onclick="selectType(this, 'audience')">
+          <div class="rtype-name">Audience</div>
+          <div class="rtype-desc">Who is the customer and what do they want?</div>
+        </div>
+        <div class="rtype" onclick="selectType(this, 'trend')">
+          <div class="rtype-name">Trend</div>
+          <div class="rtype-desc">What is the customer expecting next?</div>
+        </div>
+        <div class="rtype" onclick="selectType(this, 'expansion')">
+          <div class="rtype-name">Expansion</div>
+          <div class="rtype-desc">Enter a new market or culture group.</div>
+        </div>
+      </div>
+
+      <div class="dynamic-field">
+        <div class="dynamic-label" id="dynamic-label">Audience focus</div>
+        <select id="dynamic-select">
+          <option>Core customer profile</option>
+          <option>Purchase behaviour</option>
+          <option>Brand perception</option>
+          <option>Values & motivations</option>
+        </select>
+      </div>
+
+      <button class="btn-generate" id="btn-generate" onclick="generateReport()">
+        Generate report
+      </button>
+
+      <div class="result" id="result">
+        <div class="result-label">Report ready</div>
+        <div class="result-link" id="result-link"></div>
+        <button class="btn-copy" id="btn-copy" onclick="copyLink()">Copy link</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentType = 'audience'
+
+    const typeConfig = {
+      audience: {
+        label: 'Audience focus',
+        options: ['Core customer profile', 'Purchase behaviour', 'Brand perception', 'Values & motivations']
+      },
+      trend: {
+        label: 'Timeframe',
+        options: ['Next season (3 months)', 'Mid-term (6 months)', 'Upcoming year', 'Emerging signals only']
+      },
+      expansion: {
+        label: 'Target new market',
+        options: ['France', 'Italy', 'UK', 'Netherlands', 'Scandinavia', 'US', 'Japan', 'South Korea']
+      }
+    }
+
+    function selectType(el, type) {
+      document.querySelectorAll('.rtype').forEach(r => r.classList.remove('active'))
+      el.classList.add('active')
+      currentType = type
+      const cfg = typeConfig[type]
+      document.getElementById('dynamic-label').textContent = cfg.label
+      const sel = document.getElementById('dynamic-select')
+      sel.innerHTML = cfg.options.map(o => `<option>${o}</option>`).join('')
+    }
+
+    function getStyleKeywords() {
+      return Array.from(document.querySelectorAll('.style-pill.active'))
+        .map(p => p.textContent).join(', ')
+    }
+
     async function generateReport() {
-      const brandName = document.getElementById('brand-name').value
-      const market = document.getElementById('market').value
-      const segment = document.getElementById('segment').value
-
+      const brandName = document.getElementById('brand-name').value.trim()
       if (!brandName) {
         alert('Please enter a brand name')
         return
       }
 
-      document.getElementById('button').textContent = 'Generating...'
-      document.getElementById('button').disabled = true
+      const btn = document.getElementById('btn-generate')
+      btn.textContent = 'Generating...'
+      btn.disabled = true
+      document.getElementById('result').style.display = 'none'
 
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brandName, market, segment })
-      })
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            brandName,
+            brandDescription: document.getElementById('brand-description').value.trim(),
+            market: document.getElementById('market').value,
+            segment: document.getElementById('segment').value,
+            ageRange: document.getElementById('age-range').value,
+            income: document.getElementById('income').value,
+            styleKeywords: getStyleKeywords(),
+            reportType: currentType,
+            reportFocus: document.getElementById('dynamic-select').value
+          })
+        })
 
-      const data = await response.json()
+        const data = await response.json()
 
-      document.getElementById('report').innerText = data.report
-      document.getElementById('button').textContent = 'Generate report'
-      document.getElementById('button').disabled = false
+        if (data.reportUrl) {
+          document.getElementById('result-link').textContent = data.reportUrl
+          document.getElementById('result').style.display = 'block'
+        }
+
+      } catch (err) {
+        alert('Something went wrong. Please try again.')
+      } finally {
+        btn.textContent = 'Generate report'
+        btn.disabled = false
+      }
+    }
+
+    function copyLink() {
+      const link = document.getElementById('result-link').textContent
+      navigator.clipboard.writeText(link)
+      const btn = document.getElementById('btn-copy')
+      btn.textContent = 'Copied!'
+      btn.classList.add('copied')
+      setTimeout(() => {
+        btn.textContent = 'Copy link'
+        btn.classList.remove('copied')
+      }, 2000)
     }
   </script>
+
 </body>
 </html>

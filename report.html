@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SYNTIGO — Audience Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-deep:  #4A1B6D;
+    --purple-mid:   #6B3FA0;
+    --purple-light: #9B59C4;
+    --purple-blush: #F3EAFA;
+    --navy-deep:    #1B3A6B;
+    --navy-mid:     #2E5FAA;
+    --navy-ice:     #E8EEF8;
+    --ink:          #2E2A26;
+    --ink-mid:      #888070;
+    --ink-light:    #D3C9BF;
+    --white:        #FDFCFB;
+    --border:       rgba(46,42,38,0.1);
+  }
+  * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--purple-mid);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .nav-tag {
+      font-size: 20px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      font-weight: 500;
+    }
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 1rem;
+    }
+
+    .loading-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--purple-mid);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50%       { opacity: 1;   transform: scale(1); }
+    }
+
+    .loading-text {
+      font-size: 13px;
+      color: var(--ink-mid);
+      letter-spacing: 0.05em;
+    }
+    .hero {
+      padding: 3rem 2.5rem 2rem;
+      border-bottom: 0.5px solid var(--border);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .report-type-badge {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 4px;
+      background: var(--purple-blush);
+      color: var(--purple-mid);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: var(--purple-mid);
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-meta {
+      font-size: 13px;
+      color: var(--ink-mid);
+      letter-spacing: 0.03em;
+    }
+    .main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem;
+    }
+
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .personas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .persona-card {
+      background: var(--white);
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+
+    .persona-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .persona-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .persona-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--purple-mid);
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .persona-meta {
+      font-size: 11px;
+      color: var(--ink-mid);
+      line-height: 1.5;
+    }
+
+    .persona-spend {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 1rem;
+    }
+
+    .persona-spend-num {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--navy-deep);
+    }
+
+    .persona-spend-label {
+      font-size: 11px;
+      color: var(--ink-mid);
+    }
+
+    .stat-block {
+      margin-bottom: 8px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .stat-name { font-size: 11px; color: var(--ink-mid); }
+    .stat-val  { font-size: 11px; font-weight: 500; color: var(--ink); }
+
+    .bar-track {
+      height: 3px;
+      background: var(--ink-light);
+      border-radius: 2px;
+    }
+
+    .bar-fill {
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .channels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 10px;
+    }
+
+    .channel-pill {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 100px;
+      border: 0.5px solid var(--border);
+      color: var(--ink-mid);
+    }
+
+    .persona-quote {
+      font-size: 12px;
+      color: var(--ink-mid);
+      line-height: 1.6;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 0.5px solid var(--border);
+      font-style: italic;
+    }
+    .report-body h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--purple-mid);
+      margin: 2rem 0 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .report-body h2:first-child {
+      margin-top: 0;
+    }
+
+    .report-body p {
+      font-size: 15px;
+      color: var(--ink);
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .report-body ul {
+      list-style: none;
+      margin-bottom: 1rem;
+    }
+
+    .report-body ul li {
+      font-size: 15px;
+      color: var(--ink);
+      line-height: 1.7;
+      padding: 0.6rem 0 0.6rem 1.25rem;
+      border-bottom: 0.5px solid var(--border);
+      position: relative;
+    }
+
+    .report-body ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--purple-light);
+    }
+
+    .report-body strong {
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .report-footer {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 2.5rem;
+      border-top: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--purple-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: var(--ink-mid);
+    }
+
+    .error {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 0.75rem;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .error-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--purple-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .error-sub {
+      font-size: 14px;
+      color: var(--ink-mid);
+    }
+</style>
+</head>
+<body>
+
+ <nav class="nav">
+    <span class="nav-logo">Syntigo</span>
+    <span class="nav-tag">Audience Report</span>
+  </nav>
+
+  <div id="app">
+    <div class="loading">
+      <div class="loading-dot"></div>
+      <div class="loading-text">Loading report...</div>
+    </div>
+  </div>
+  <script>
+    const avatarColors = [
+      { bg: '#F3EAFA', color: '#6B3FA0' },
+      { bg: '#E8EEF8', color: '#1B3A6B' },
+      { bg: '#EEF3FB', color: '#2E5FAA' }
+    ]
+
+    function getInitials(name) {
+      return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+    }
+
+    function parsePersonas(text) {
+      const lines = text.split('\n')
+      const personas = []
+      for (const line of lines) {
+        if (line.startsWith('PERSONA:')) {
+          const parts = line.replace('PERSONA:', '').split('|').map(s => s.trim())
+          if (parts.length >= 8) {
+            const get = (key) => {
+              const part = parts.find(p => p.toLowerCase().startsWith(key + ':'))
+              return part ? part.split(':').slice(1).join(':').trim() : ''
+            }
+            personas.push({
+              name: parts[0],
+              age: parts[1],
+              city: parts[2],
+              occupation: parts[3],
+              spend: get('spend'),
+              loyalty: parseInt(get('loyalty')) || 0,
+              sustainability: parseInt(get('sustainability')) || 0,
+              trend: parseInt(get('trend')) || 0,
+              channels: get('channels').split(',').map(c => c.trim()),
+              quote: get('quote')
+            })
+          }
+        }
+      }
+      return personas
+    }
+
+    function removePersonaLines(text) {
+      return text.split('\n').filter(line => !line.startsWith('PERSONA:')).join('\n')
+    }
+    function renderMarkdown(text) {
+      return text
+        .split('\n')
+        .map(line => {
+          if (line.startsWith('## ')) {
+            return `<h2>${line.replace('## ', '')}</h2>`
+          }
+          if (line.startsWith('- ')) {
+            return `<li>${line.replace('- ', '')}</li>`
+          }
+          if (line.trim() === '') {
+            return ''
+          }
+          return `<p>${line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`
+        })
+        .join('\n')
+        .replace(/(<li>.*<\/li>\n?)+/g, match => `<ul>${match}</ul>`)
+    }
+
+    function renderPersonaCard(persona, index) {
+      const colors = avatarColors[index % avatarColors.length]
+      return `
+        <div class="persona-card">
+          <div class="persona-top">
+            <div class="persona-avatar" style="background:${colors.bg}; color:${colors.color};">
+              ${getInitials(persona.name)}
+            </div>
+            <div>
+              <div class="persona-name">${persona.name}</div>
+              <div class="persona-meta">${persona.age} · ${persona.city}<br>${persona.occupation}</div>
+            </div>
+          </div>
+          <div class="persona-spend">
+            <span class="persona-spend-num">€${persona.spend}</span>
+            <span class="persona-spend-label">/ month</span>
+          </div>
+          <div class="stat-block">
+            <div class="stat-row">
+              <span class="stat-name">Brand loyalty</span>
+              <span class="stat-val">${persona.loyalty}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${persona.loyalty}%; background:#6B3FA0;"></div>
+            </div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-row">
+              <span class="stat-name">Sustainability</span>
+              <span class="stat-val">${persona.sustainability}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${persona.sustainability}%; background:#2E5FAA;"></div>
+            </div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-row">
+              <span class="stat-name">Trend sensitivity</span>
+              <span class="stat-val">${persona.trend}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${persona.trend}%; background:#9B59C4;"></div>
+            </div>
+          </div>
+          <div class="channels">
+            ${persona.channels.map(c => `<span class="channel-pill">${c}</span>`).join('')}
+          </div>
+          ${persona.quote ? `<div class="persona-quote">"${persona.quote}"</div>` : ''}
+        </div>
+      `
+    }
+    function renderReport(data) {
+      const personas = parsePersonas(data.report)
+      const cleanReport = removePersonaLines(data.report)
+      const reportTypeLabel = {
+        audience: 'Audience Report',
+        trend: 'Trend Report',
+        expansion: 'Expansion Report'
+      }
+      const date = new Date(data.createdAt).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+
+      document.getElementById('app').innerHTML = `
+        <div class="hero">
+          <div class="report-type-badge">${reportTypeLabel[data.reportType] || 'Report'}</div>
+          <h1 class="hero-title">${data.brandName}</h1>
+          <div class="hero-meta">${data.market} · ${data.segment} · ${date}</div>
+        </div>
+
+        <div class="main">
+          ${personas.length > 0 ? `
+            <div class="section">
+              <div class="section-label">Consumer personas</div>
+              <div class="personas-grid">
+                ${personas.map((p, i) => renderPersonaCard(p, i)).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="section">
+            <div class="section-label">Full report</div>
+            <div class="report-body">${renderMarkdown(cleanReport)}</div>
+          </div>
+        </div>
+
+        <footer class="report-footer">
+          <span class="footer-logo">Syntigo</span>
+          <span class="footer-note">Generated ${date} · Confidential</span>
+        </footer>
+      `
+    }
+
+    async function loadReport() {
+      const params = new URLSearchParams(window.location.search)
+      const id = params.get('id')
+
+      if (!id) {
+        document.getElementById('app').innerHTML = `
+          <div class="error">
+            <div class="error-title">No report found</div>
+            <div class="error-sub">This link appears to be invalid or incomplete.</div>
+          </div>`
+        return
+      }
+
+      try {
+        const response = await fetch(`/api/get-report?id=${id}`)
+        const data = await response.json()
+
+        if (!data || data.error) {
+          document.getElementById('app').innerHTML = `
+            <div class="error">
+              <div class="error-title">Report not found</div>
+              <div class="error-sub">This report may have expired or the link is incorrect.</div>
+            </div>`
+          return
+        }
+
+        renderReport(data)
+      } catch (err) {
+        document.getElementById('app').innerHTML = `
+          <div class="error">
+            <div class="error-title">Something went wrong</div>
+            <div class="error-sub">Please try refreshing the page.</div>
+          </div>`
+      }
+    }
+
+    loadReport()
+
+  </script>
+</body>
+</html>
