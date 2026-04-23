@@ -362,7 +362,7 @@
 
  <nav class="nav">
     <span class="nav-logo">Syntigo</span>
-    <span class="nav-tag">Audience Report</span>
+    <span class="nav-tag" id="nav-tag">Report</span>
   </nav>
 
   <div id="app">
@@ -413,9 +413,10 @@
     function removePersonaLines(text) {
       return text.split('\n').filter(line => {
         if (line.includes('PERSONA:')) return false
-        if (line.startsWith('## Swiss') && line.includes('|')) return false
-        if (line.match(/^##\s.+\|\s/)) return false
         if (line.trim() === '---') return false
+        if (line.includes('|')) return false
+        if (line.trim().toUpperCase().includes('PERSONA PROFILE')) return false
+        if (line.trim().toUpperCase().includes('CONSUMER PERSONA')) return false
         return true
       }).join('\n')
     }
@@ -423,24 +424,18 @@
       return text
         .split('\n')
         .map(line => {
+          if (line.startsWith('# ')) return ''
+          if (line.startsWith('## ') && line.includes('|')) return ''
+          if (line.includes('|') && !line.startsWith('<')) return ''
+          if (line.trim().toUpperCase().includes('PERSONA PROFILE')) return ''
+          if (line.trim().toUpperCase().includes('CONSUMER PERSONA')) return ''
           if (line.startsWith('## ')) {
             return `<h2>${line.replace('## ', '')}</h2>`
           }
-          if (line.startsWith('# ')) {
-            return ''
+          if (line.startsWith('- ') || line.match(/^\d+\.\s/)) {
+            return `<li>${line.replace(/^-\s|^\d+\.\s/, '')}</li>`
           }
-          if (line.startsWith('## ') && line.includes('|')) {
-            return ''
-          }
-          if (line.startsWith('# ')) {
-            return ''
-          }
-          if (line.startsWith('- ')) {
-            return `<li>${line.replace('- ', '')}</li>`
-          }
-          if (line.trim() === '') {
-            return ''
-          }
+          if (line.trim() === '' || line.trim() === '---') return ''
           return `<p>${line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`
         })
         .join('\n')
@@ -461,7 +456,7 @@
             </div>
           </div>
           <div class="persona-spend">
-            <span class="persona-spend-num">€${persona.spend}</span>
+            <span class="persona-spend-num">€${persona.spend.toString().replace('€', '')}</span>
             <span class="persona-spend-label">/ month</span>
           </div>
           <div class="stat-block">
@@ -511,7 +506,7 @@
         month: 'long',
         year: 'numeric'
       })
-
+      document.getElementById('nav-tag').textContent = reportTypeLabel[data.reportType] || 'Report'
       document.getElementById('app').innerHTML = `
         <div class="hero">
           <div class="report-type-badge">${reportTypeLabel[data.reportType] || 'Report'}</div>
