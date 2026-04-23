@@ -387,7 +387,7 @@
       const personas = []
       for (const line of lines) {
         if (line.includes('PERSONA:')) {
-          const parts = line.substring(line.indexOf('PERSONA:') + 8).split('|').map(s => s.trim())
+          const parts = line.substring(line.indexOf('PERSONA:') + 8).replace(/\*/g, '').split('|').map(s => s.trim())
           if (parts.length >= 8) {
             const get = (key) => {
               const part = parts.find(p => p.toLowerCase().startsWith(key + ':'))
@@ -410,9 +410,14 @@
       }
       return personas
     }
-
     function removePersonaLines(text) {
-      return text.split('\n').filter(line => !line.startsWith('PERSONA:')).join('\n')
+      return text.split('\n').filter(line => {
+        if (line.includes('PERSONA:')) return false
+        if (line.startsWith('## Swiss') && line.includes('|')) return false
+        if (line.match(/^##\s.+\|\s/)) return false
+        if (line.trim() === '---') return false
+        return true
+      }).join('\n')
     }
     function renderMarkdown(text) {
       return text
@@ -420,6 +425,12 @@
         .map(line => {
           if (line.startsWith('## ')) {
             return `<h2>${line.replace('## ', '')}</h2>`
+          }
+          if (line.startsWith('# ')) {
+            return ''
+          }
+          if (line.startsWith('## ') && line.includes('|')) {
+            return ''
           }
           if (line.startsWith('# ')) {
             return ''
