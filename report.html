@@ -432,8 +432,9 @@
           if (line.startsWith('## ')) {
             return `<h2>${line.replace('## ', '')}</h2>`
           }
-          if (line.startsWith('- ') || line.match(/^\d+\.\s/)) {
-            return `<li>${line.replace(/^-\s|^\d+\.\s/, '')}</li>`
+         if (line.startsWith('- ') || line.match(/^\d+\.\s/)) {
+            const content = line.replace(/^-\s|^\d+\.\s/, '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            return `<li>${content}</li>`
           }
           if (line.trim() === '' || line.trim() === '---') return ''
           return `<p>${line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`
